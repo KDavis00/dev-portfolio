@@ -12,17 +12,17 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ---------------------------
+
 // Middleware
-// ---------------------------
+-
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// ---------------------------
+
 // Cloudinary Config
-// ---------------------------
+
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -30,16 +30,16 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// ---------------------------
+
 // Multer (memory storage)
-// ---------------------------
+
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// ---------------------------
+
 // Database
-// ---------------------------
+
 
 const db = new Database("database.db");
 
@@ -56,9 +56,9 @@ CREATE TABLE IF NOT EXISTS projects (
 )
 `).run();
 
-// ---------------------------
+
 // Upload Media
-// ---------------------------
+
 
 app.post("/upload", upload.single("media"), async (req, res) => {
 
@@ -99,9 +99,9 @@ app.post("/upload", upload.single("media"), async (req, res) => {
 
 });
 
-// ---------------------------
+
 // API ROUTES
-// ---------------------------
+
 
 // Get all projects
 
