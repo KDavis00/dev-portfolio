@@ -128,8 +128,6 @@ app.delete("/api/projects/:id", (req, res) => {
 });
 
 // Serve frontend
-const path = require("path");
-
 app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
