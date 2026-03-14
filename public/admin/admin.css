@@ -1,0 +1,65 @@
+body {
+  font-family: 'Roboto Mono', monospace;
+  background-color: #111;
+  color: #eee;
+  margin: 0;
+  padding: 0;
+}
+
+header { text-align: center; padding: 20px; }
+main { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+label { display: block; margin-top: 15px; margin-bottom: 5px; }
+input, textarea, select, button { width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: none; font-size: 1rem; }
+textarea { resize: vertical; min-height: 80px; }
+button { background-color: #eee; color: #111; font-weight: bold; cursor: pointer; transition: 0.2s; }
+button:hover { background-color: #ddd; }
+
+/* Bubble container */
+.multi-bubble-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  border: 1px solid #444;
+  padding: 5px;
+  min-height: 40px;
+  border-radius: 5px;
+  background-color: #111;
+  cursor: text;
+}
+
+/* Bubble style */
+.bubble {
+  background-color: #eee;
+  color: #111;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+.bubble .remove {
+  margin-left: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Preview grid */
+#preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.project {
+  background-color: #222;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.project img, .project video { width: 100%; border-radius: 5px; margin-bottom: 10px; }
+.project h3 { margin: 0 0 5px 0; }
+.project p, .project a { margin: 2px 0; color: #eee; text-decoration: none; }
+.project a:hover { text-decoration: underline; }

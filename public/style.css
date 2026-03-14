@@ -1,0 +1,188 @@
+/* ----------------------- Global ----------------------- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Roboto Mono", monospace;
+    background-color: #0f0f0f; /* black background */
+    color: #f5f5f5;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* Links */
+a {
+    color: #f5f5f5;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #1db954; /* subtle accent */
+}
+
+/* Header */
+header {
+    text-align: center;
+    padding: 2rem;
+    border-bottom: 1px solid #333;
+}
+
+header h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #f5f5f5;
+}
+
+header p {
+    font-size: 1.2rem;
+    color: #bbb;
+}
+
+/* Category Filter */
+#categoryFilter {
+    display: block;
+    margin: 1rem auto 2rem auto;
+    padding: 0.5rem;
+    width: 200px;
+    border-radius: 4px;
+    border: 1px solid #444;
+    background-color: #111;
+    color: #f5f5f5;
+}
+.multi-bubble-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  border: 1px solid #ccc;
+  padding: 5px;
+  min-height: 40px;
+  border-radius: 5px;
+  cursor: text;
+  background-color: #111; /* match your dark theme */
+}
+
+.bubble {
+  background-color: #fff;
+  color: #111;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+.bubble .remove {
+  margin-left: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* ----------------------- Project Grid (Pegboard + Lines) ----------------------- */
+#projects {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+    justify-items: center;
+    border-radius: 10px;
+    position: relative;
+
+    /* Pegboard + subtle lines for depth */
+    background-color: #0f0f0f;
+    background-image:
+        radial-gradient(circle, #333 2px, transparent 2px),
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.03), rgba(255,255,255,0.03) 1px, transparent 1px, transparent 20px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.02) 1px, transparent 1px, transparent 20px);
+    background-size: 40px 40px, 40px 40px, 40px 40px;
+}
+
+/* ----------------------- Project Card (Sticky Note / Sheet) ----------------------- */
+.project {
+    background-color: #1a1a1a; /* dark sheet */
+    border: 1px solid #555;
+    border-radius: 8px;
+    padding: 1rem;
+    width: 250px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    transform: rotate(var(--rotation, 0deg));
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* Slight rotation for sticky effect */
+.project:nth-child(4n+1) { --rotation: -2deg; }
+.project:nth-child(4n+2) { --rotation: 1.5deg; }
+.project:nth-child(4n+3) { --rotation: -1deg; }
+.project:nth-child(4n+4) { --rotation: 2deg; }
+
+/* Hover lift / subtle glow */
+.project:hover {
+    transform: rotate(0deg) translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,255,255,0.15);
+}
+
+/* Media inside card */
+.project img,
+.project video {
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    border: 1px solid #333;
+}
+
+/* Project Info */
+.project h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.3rem;
+    color: #f5f5f5;
+}
+
+.project p {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    color: #ccc;
+}
+
+.project a {
+    margin-top: auto;
+    padding: 0.4rem 0.6rem;
+    display: inline-block;
+    border: 1px solid #555;
+    border-radius: 4px;
+    margin-right: 0.3rem;
+    margin-bottom: 0.3rem;
+    font-size: 0.85rem;
+}
+
+.project a:hover {
+    border-color: #1db954;
+    color: #1db954;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid #333;
+    font-size: 0.85rem;
+    color: #777;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    #projects {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    .project {
+        width: 100%;
+    }
+}
