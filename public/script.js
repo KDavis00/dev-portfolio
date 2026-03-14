@@ -13,7 +13,7 @@ function renderProjects(category) {
 
   const filtered = category === "All"
     ? allProjects
-    : allProjects.filter(p => p.category === category);
+    : allProjects.filter(p => p.category.split(', ').includes(category));
 
   filtered.forEach(p => {
     const card = document.createElement("div");
