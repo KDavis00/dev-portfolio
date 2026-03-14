@@ -2,62 +2,60 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Panel - Dev Portfolio</title>
+  <title>Dev Portfolio Admin</title>
   <link rel="stylesheet" href="admin.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<header>
-  <h1>Dev Portfolio Admin</h1>
-  <p>Add and preview your projects</p>
-</header>
+  <header>
+    <h1>Dev Portfolio Admin</h1>
+    <p>Manage your projects: Add, Edit, Delete</p>
+  </header>
 
-<main>
-  <form id="projectForm">
-    <label for="title">Title</label>
-    <input type="text" id="title" required>
+  <!-- Add/Edit Form -->
+  <section id="add-project">
+    <form id="projectForm">
+      <label for="title">Title</label>
+      <input type="text" id="title" placeholder="Optional">
 
-    <label for="description">Description</label>
-    <textarea id="description" required></textarea>
+      <label for="description">Description</label>
+      <textarea id="description" placeholder="Optional"></textarea>
 
-    <!-- Category dropdown + bubbles -->
-    <label>Category</label>
-    <div id="categoryBubbles" class="multi-bubble-container"></div>
-    <select id="categoryDropdown">
-      <option value="WordPress">WordPress</option>
-      <option value="Gadgets">Gadgets</option>
-      <option value="Fun Stuff">Fun Stuff</option>
-      <option value="Storefront">Storefront</option>
-    </select>
+      <label for="category">Category (comma-separated)</label>
+      <input type="text" id="category" placeholder="Optional">
 
-    <!-- Tech dropdown + bubbles -->
-    <label>Tech Used</label>
-    <div id="techBubbles" class="multi-bubble-container"></div>
-    <select id="techDropdown">
-      <option value="HTML">HTML</option>
-      <option value="CSS">CSS</option>
-      <option value="JavaScript">JavaScript</option>
-      <option value="Node.js">Node.js</option>
-      <option value="React">React</option>
-      <option value="WordPress">WordPress</option>
-    </select>
+      <label for="tech">Tech Used (comma-separated)</label>
+      <input type="text" id="tech" placeholder="Optional">
 
-    <label for="demo">Demo URL</label>
-    <input type="url" id="demo">
+      <label for="demo">Demo URL</label>
+      <input type="url" id="demo" placeholder="Optional">
 
-    <label for="github">GitHub URL</label>
-    <input type="url" id="github">
+      <label for="github">GitHub URL</label>
+      <input type="url" id="github" placeholder="Optional">
 
-    <label for="media">Project Image / Video</label>
-    <input type="file" id="media" accept="image/*,video/*">
+      <label for="media">Media (image/video)</label>
+      <input type="file" id="media" accept="image/*,video/*">
 
-    <button type="submit" id="submitBtn">Add Project</button>
-  </form>
+      <button type="submit" id="submitBtn">Add Project</button>
+    </form>
+  </section>
 
-  <h2>Live Preview</h2>
-  <div id="preview"></div>
-</main>
+  <!-- Live Preview -->
+  <section id="preview-section">
+    <h2>Live Preview</h2>
+    <div id="preview"></div>
+  </section>
 
-<script src="admin.js"></script>
+  <!-- Existing Projects -->
+  <section id="projects-section">
+    <h2>Existing Projects</h2>
+    <div id="projects-list"></div>
+  </section>
+
+  <footer>
+    &copy; 2026 Kae Davis • Admin Panel
+  </footer>
+
+  <script src="admin.js"></script>
 </body>
 </html>

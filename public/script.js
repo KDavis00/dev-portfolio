@@ -1,61 +1,46 @@
-// Homepage JS: Fetch and Display Projects
+let allProjects = []; // store fetched projects
 
-const projectsContainer = document.getElementById("projects");
-const categoryFilter = document.getElementById("categoryFilter");
-
-// Render a single project card
-function renderProject(project) {
-  const card = document.createElement("div");
-  card.className = "project";
-
-  // Media: check if URL exists and is video or image
-  let mediaHTML = "";
-  if (project.url) {
-    if (project.url.match(/\.(mp4|webm|ogg)$/i)) {
-      mediaHTML = `<video src="${project.url}" controls></video>`;
-    } else {
-      mediaHTML = `<img src="${project.url}" alt="${project.title}">`;
-    }
-  }
-
-  card.innerHTML = `
-    ${mediaHTML}
-    <h3>${project.title}</h3>
-    <p>${project.description}</p>
-    <p><strong>Category:</strong> ${project.category}</p>
-    <p><strong>Tech:</strong> ${project.tech}</p>
-    <p>
-      ${project.demo ? `<a href="${project.demo}" target="_blank">Demo</a>` : ""}
-      ${project.github ? `<a href="${project.github}" target="_blank">GitHub</a>` : ""}
-    </p>
-  `;
-
-  projectsContainer.appendChild(card);
+async function loadProjects() {
+  const res = await fetch("/api/projects");
+  allProjects = await res.json();
+  renderProjects("All");
 }
 
-// Fetch projects from server
-async function fetchProjects() {
-  try {
-    const res = await fetch("/api/projects");
-    const projects = await res.json();
+// Render projects for a category
+function renderProjects(category) {
+  const container = document.getElementById("projects");
+  container.innerHTML = "";
 
-    // Optional: filter by category
-    const selectedCategory = categoryFilter?.value || "";
-    const filteredProjects = selectedCategory
-      ? projects.filter(p => p.category.toLowerCase() === selectedCategory.toLowerCase())
-      : projects;
+  const filtered = category === "All"
+    ? allProjects
+    : allProjects.filter(p => p.category === category);
 
-    projectsContainer.innerHTML = ""; // clear previous
-    filteredProjects.forEach(renderProject);
-  } catch (err) {
-    console.error("Failed to fetch projects:", err);
-  }
+  filtered.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "project-card";
+    card.innerHTML = `
+      ${p.url ? `<img src="${p.url}" alt="${p.title}">` : ""}
+      <h3>${p.title}</h3>
+      <p>${p.description}</p>
+      <p>
+        ${p.demo ? `<a href="${p.demo}" target="_blank">Demo</a>` : ""}
+        ${p.github ? `<a href="${p.github}" target="_blank">GitHub</a>` : ""}
+      </p>
+    `;
+    container.appendChild(card);
+  });
 }
 
-// Initial load
-fetchProjects();
+// Set up filter buttons
+document.querySelectorAll("#filters button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    // Remove active class from all buttons
+    document.querySelectorAll("#filters button").forEach(b => b.classList.remove("active"));
+    // Set this button active
+    btn.classList.add("active");
+    // Render projects for selected category
+    renderProjects(btn.dataset.category);
+  });
+});
 
-// Filter change
-if (categoryFilter) {
-  categoryFilter.addEventListener("change", fetchProjects);
-}
+loadProjects();
