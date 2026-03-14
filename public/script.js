@@ -17,7 +17,7 @@ function renderProjects(category) {
 
   filtered.forEach(p => {
     const card = document.createElement("div");
-    card.className = "project-card";
+    card.className = "project";
     card.innerHTML = `
       ${p.url ? `<img src="${p.url}" alt="${p.title}">` : ""}
       <h3>${p.title}</h3>

@@ -177,6 +177,53 @@ app.post("/api/projects", (req, res) => {
 });
 
 // --------------------
+// UPDATE Project
+// --------------------
+app.put("/api/projects/:id", (req, res) => {
+
+  const { title, description, category, tech, demo, github, url } = req.body;
+
+  if (!title || !description) {
+    return res.status(400).json({
+      error: "Title and description required"
+    });
+  }
+
+  try {
+
+    const result = db.prepare(`
+      UPDATE projects
+      SET title=?, description=?, category=?, tech=?, demo=?, github=?, url=?
+      WHERE id=?
+    `).run(
+      title,
+      description,
+      category || "",
+      tech || "",
+      demo || "",
+      github || "",
+      url || "",
+      req.params.id
+    );
+
+    if (result.changes > 0) {
+      res.json({
+        updated: req.params.id
+      });
+    } else {
+      res.status(404).json({ error: "Project not found" });
+    }
+
+  } catch (err) {
+
+    console.error("Update error:", err);
+    res.status(500).json({ error: err.message });
+
+  }
+
+});
+
+// --------------------
 // DELETE Project
 // --------------------
 app.delete("/api/projects/:id", (req, res) => {
