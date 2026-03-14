@@ -11,23 +11,31 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// --------------------
 // Middleware
+// --------------------
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
 
+// --------------------
 // Cloudinary Config
+// --------------------
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// Multer (memory storage)
+// --------------------
+// Multer Setup
+// --------------------
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// Database
+// --------------------
+// Database Setup
+// --------------------
 const db = new Database("database.db");
 
 db.prepare(`
@@ -43,97 +51,157 @@ CREATE TABLE IF NOT EXISTS projects (
 )
 `).run();
 
-// --- API ROUTES ---
-
+// --------------------
 // Upload Media
+// --------------------
 app.post("/upload", upload.single("media"), async (req, res) => {
+
   if (!req.file) {
     return res.json({ url: "" });
   }
 
   try {
+
     const stream = cloudinary.uploader.upload_stream(
       {
         resource_type: "auto",
         folder: "dev-portfolio"
       },
       (error, result) => {
+
         if (error) {
           console.error("Cloudinary error:", error);
           return res.status(500).json({ error: "Upload failed" });
         }
+
         res.json({ url: result.secure_url });
+
       }
     );
 
     const readable = require("stream").Readable.from(req.file.buffer);
     readable.pipe(stream);
+
   } catch (err) {
+
     console.error(err);
     res.status(500).json({ error: "Upload error" });
+
   }
 });
 
-// Get all projects
+// --------------------
+// GET All Projects
+// --------------------
 app.get("/api/projects", (req, res) => {
+
   try {
-    const projects = db.prepare("SELECT * FROM projects ORDER BY id DESC").all();
+
+    const projects = db
+      .prepare("SELECT * FROM projects ORDER BY id DESC")
+      .all();
+
     res.json(projects);
+
   } catch (err) {
+
     console.error(err);
     res.status(500).json({ error: err.message });
+
   }
+
 });
 
-// Get single project
+// --------------------
+// GET Single Project
+// --------------------
 app.get("/api/projects/:id", (req, res) => {
+
   try {
-    const project = db.prepare("SELECT * FROM projects WHERE id=?").get(req.params.id);
+
+    const project = db
+      .prepare("SELECT * FROM projects WHERE id=?")
+      .get(req.params.id);
+
     res.json(project);
+
   } catch (err) {
+
     console.error(err);
     res.status(500).json({ error: err.message });
+
   }
+
 });
 
-// Add project
+// --------------------
+// ADD Project
+// --------------------
 app.post("/api/projects", (req, res) => {
+
   const { title, description, category, tech, demo, github, url } = req.body;
+
   if (!title || !description) {
-    return res.status(400).json({ error: "Title and description required" });
+    return res.status(400).json({
+      error: "Title and description required"
+    });
   }
 
   try {
+
     const result = db.prepare(`
-      INSERT INTO projects (title,description,category,tech,demo,github,url)
-      VALUES (?,?,?,?,?,?,?)
-    `).run(title, description, category || "", tech || "", demo || "", github || "", url || "");
-    res.json({ id: result.lastInsertRowid });
+      INSERT INTO projects
+      (title, description, category, tech, demo, github, url)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      title,
+      description,
+      category || "",
+      tech || "",
+      demo || "",
+      github || "",
+      url || ""
+    );
+
+    res.json({
+      id: result.lastInsertRowid
+    });
+
   } catch (err) {
-    console.error(err);
+
+    console.error("Insert error:", err);
     res.status(500).json({ error: err.message });
+
   }
+
 });
 
-// Delete project
+// --------------------
+// DELETE Project
+// --------------------
 app.delete("/api/projects/:id", (req, res) => {
+
   try {
-    db.prepare("DELETE FROM projects WHERE id=?").run(req.params.id);
-    res.json({ deleted: req.params.id });
+
+    db.prepare("DELETE FROM projects WHERE id=?")
+      .run(req.params.id);
+
+    res.json({
+      deleted: req.params.id
+    });
+
   } catch (err) {
+
     console.error(err);
     res.status(500).json({ error: err.message });
+
   }
+
 });
 
-// --- THE FIX FOR PATH-TO-REGEXP ERROR ---
-// This route MUST be the last route in your file.
-// We change '/*' to '/:any*' to satisfy newer library versions.
-app.get("/:any*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-// Start Server
+// --------------------
+// START SERVER
+// --------------------
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
