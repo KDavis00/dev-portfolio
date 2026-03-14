@@ -1,4 +1,4 @@
-/* Homepage JS: Fetch and Display Projects */
+// Homepage JS: Fetch and Display Projects
 
 const projectsContainer = document.getElementById("projects");
 const categoryFilter = document.getElementById("categoryFilter");
