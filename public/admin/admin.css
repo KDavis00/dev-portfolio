@@ -48,7 +48,8 @@ header p {
 #add-project input[type="text"],
 #add-project input[type="url"],
 #add-project textarea,
-#add-project input[type="file"] {
+#add-project input[type="file"],
+#add-project select {
   width: 100%;
   padding: 0.5rem;
   margin-top: 0.3rem;
@@ -78,6 +79,35 @@ header p {
 #add-project button:hover {
   background: #ccc;
   transform: translateY(-2px);
+}
+
+/* Bubbles */
+.bubbles {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.bubble {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  padding: 0.3rem 0.6rem;
+  border-radius: 16px;
+  font-size: 0.9rem;
+}
+
+.bubble .remove {
+  margin-left: 0.5rem;
+  cursor: pointer;
+  font-weight: bold;
+  color: #ff4d4d;
+}
+
+.bubble .remove:hover {
+  color: #cc0000;
 }
 
 /* Live Preview */

@@ -33,10 +33,12 @@ function addBubble(value, container, selectedArray) {
   removeBtn.onclick = () => {
     selectedArray.splice(selectedArray.indexOf(value), 1);
     bubble.remove();
+    renderPreview(mediaInput.files[0] ? URL.createObjectURL(mediaInput.files[0]) : "");
   };
 
   bubble.appendChild(removeBtn);
   container.appendChild(bubble);
+  renderPreview(mediaInput.files[0] ? URL.createObjectURL(mediaInput.files[0]) : "");
 }
 
 // Dropdown click event
