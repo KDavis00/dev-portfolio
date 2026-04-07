@@ -7,18 +7,20 @@ const mediaInput = document.getElementById("media");
 const previewContainer = document.getElementById("preview");
 const submitBtn = document.getElementById("submitBtn");
 
-// category and tech dropdown elements
+// dropdown elements
 const categoryDropdown = document.getElementById("categoryDropdown");
 const categoryBubbles = document.getElementById("categoryBubbles");
 const techDropdown = document.getElementById("techDropdown");
 const techBubbles = document.getElementById("techBubbles");
+const repoDropdown = document.getElementById("repoDropdown");
 
 const projectsList = document.getElementById("projects-list");
 
-// selected values storage
+// state
 let selectedCategories = [];
 let selectedTech = [];
 let allProjects = [];
+let githubRepos = [];
 
 // load projects from backend
 async function loadProjects() {
@@ -31,13 +33,14 @@ async function loadProjects() {
   }
 }
 
-// render projects in admin list
+// render admin list
 function renderProjectsList() {
   projectsList.innerHTML = "";
 
   allProjects.forEach(p => {
     const projectDiv = document.createElement("div");
     projectDiv.className = "admin-project";
+
     projectDiv.innerHTML = `
       <div>
         <h3>${p.title}</h3>
@@ -46,15 +49,16 @@ function renderProjectsList() {
         <p><strong>Tech:</strong> ${p.tech}</p>
       </div>
       <div>
-        <button class="edit-btn" onclick="editProject(${p.id})">Edit</button>
-        <button class="delete-btn" onclick="deleteProject(${p.id})">Delete</button>
+        <button onclick="editProject(${p.id})">Edit</button>
+        <button onclick="deleteProject(${p.id})">Delete</button>
       </div>
     `;
+
     projectsList.appendChild(projectDiv);
   });
 }
 
-// load project into form for editing
+// edit project
 function editProject(id) {
   const project = allProjects.find(p => p.id === id);
   if (!project) return;
@@ -66,36 +70,33 @@ function editProject(id) {
 
   selectedCategories = project.category ? project.category.split(", ") : [];
   categoryBubbles.innerHTML = "";
-  selectedCategories.forEach(cat => addBubble(cat, categoryBubbles, selectedCategories));
+  selectedCategories.forEach(cat =>
+    addBubble(cat, categoryBubbles, selectedCategories)
+  );
 
   selectedTech = project.tech ? project.tech.split(", ") : [];
   techBubbles.innerHTML = "";
-  selectedTech.forEach(tech => addBubble(tech, techBubbles, selectedTech));
+  selectedTech.forEach(tech =>
+    addBubble(tech, techBubbles, selectedTech)
+  );
 
-  renderPreview(project.url || "");
+  renderPreview();
 
   submitBtn.textContent = "Update Project";
   submitBtn.dataset.editId = id;
 }
 
-// delete project from backend
+// delete project
 async function deleteProject(id) {
-  if (!confirm("Are you sure you want to delete this project?")) return;
-
   try {
-    const res = await fetch(`/api/projects/${id}`, { method: "DELETE" });
-    if (res.ok) {
-      alert("Project deleted!");
-      loadProjects();
-    } else {
-      alert("Failed to delete project");
-    }
+    await fetch(`/api/projects/${id}`, { method: "DELETE" });
+    loadProjects();
   } catch (err) {
     console.error("Delete error:", err);
   }
 }
 
-// create selection bubble
+// bubble system
 function addBubble(value, container, selectedArray) {
   if (!value || selectedArray.includes(value)) return;
 
@@ -106,8 +107,7 @@ function addBubble(value, container, selectedArray) {
   bubble.textContent = value;
 
   const removeBtn = document.createElement("span");
-  removeBtn.classList.add("remove");
-  removeBtn.textContent = "×";
+  removeBtn.textContent = "x";
 
   removeBtn.onclick = () => {
     selectedArray.splice(selectedArray.indexOf(value), 1);
@@ -118,44 +118,43 @@ function addBubble(value, container, selectedArray) {
   container.appendChild(bubble);
 }
 
-// category dropdown handler
+// dropdown handlers
 categoryDropdown.addEventListener("change", () => {
   addBubble(categoryDropdown.value, categoryBubbles, selectedCategories);
   categoryDropdown.value = "";
 });
 
-// tech dropdown handler
 techDropdown.addEventListener("change", () => {
   addBubble(techDropdown.value, techBubbles, selectedTech);
   techDropdown.value = "";
 });
 
-// render live preview
+// preview
 function renderPreview(url) {
   previewContainer.innerHTML = `
     <div class="project">
-      ${url ? (url.match(/\.(mp4|webm|ogg)$/i) ? `<video src="${url}" controls></video>` : `<img src="${url}" alt="Preview">`) : ""}
+      ${url ? `<img src="${url}">` : ""}
       <h3>${titleInput.value}</h3>
       <p>${descriptionInput.value}</p>
-      <p><strong>Category:</strong> ${selectedCategories.join(", ")}</p>
-      <p><strong>Tech:</strong> ${selectedTech.join(", ")}</p>
+      <p>${selectedCategories.join(", ")}</p>
+      <p>${selectedTech.join(", ")}</p>
     </div>
   `;
 }
 
-// input listeners for preview update
+// form inputs update preview
 [titleInput, descriptionInput, demoInput, githubInput].forEach(input => {
   input.addEventListener("input", () => renderPreview());
 });
 
-// media preview handler
 mediaInput.addEventListener("change", () => {
   renderPreview();
 });
 
-// upload media to server
+// upload media
 async function uploadMedia(file) {
   if (!file) return "";
+
   const formData = new FormData();
   formData.append("media", file);
 
@@ -169,62 +168,53 @@ async function uploadMedia(file) {
   }
 }
 
-// github import button handler
-const importBtn = document.getElementById("importGitHubBtn");
-
-if (importBtn) {
-  importBtn.addEventListener("click", importGitHubProjects);
-}
-
-// import github repositories
-async function importGitHubProjects() {
+// load github repos
+async function loadGitHubRepos() {
   try {
     const res = await fetch("https://api.github.com/users/KDavis00/repos");
-    const repos = await res.json();
+    githubRepos = await res.json();
 
-    if (!repos.length) {
-      alert("No repos found");
-      return;
-    }
+    repoDropdown.innerHTML = `<option value="">Select repo</option>`;
 
-    const repo = repos[0]; // start with first repo (or let user choose later)
-
-    // fill form only
-    titleInput.value = repo.name || "";
-    descriptionInput.value = repo.description || "";
-
-    githubInput.value = repo.html_url || "";
-    demoInput.value = repo.homepage || "";
-
-    // optional auto-fill (but user can change)
-    selectedCategories = repo.language ? [repo.language] : [];
-    categoryBubbles.innerHTML = "";
-    selectedCategories.forEach(cat =>
-      addBubble(cat, categoryBubbles, selectedCategories)
-    );
-
-    selectedTech = repo.language ? [repo.language] : [];
-    techBubbles.innerHTML = "";
-    selectedTech.forEach(tech =>
-      addBubble(tech, techBubbles, selectedTech)
-    );
-
-    renderPreview();
-
-    alert("Form filled from GitHub repo. You can edit before saving.");
-
+    githubRepos.forEach((repo, index) => {
+      const option = document.createElement("option");
+      option.value = index;
+      option.textContent = repo.name;
+      repoDropdown.appendChild(option);
+    });
   } catch (err) {
-    console.error(err);
-    alert("GitHub import failed");
+    console.error("GitHub load failed:", err);
   }
 }
 
-// form submit handler
+// fill form from repo
+repoDropdown.addEventListener("change", () => {
+  const repo = githubRepos[repoDropdown.value];
+  if (!repo) return;
+
+  titleInput.value = repo.name || "";
+  descriptionInput.value = repo.description || "";
+  githubInput.value = repo.html_url || "";
+  demoInput.value = repo.homepage || "";
+
+  selectedCategories = [];
+  selectedTech = repo.language ? [repo.language] : [];
+
+  categoryBubbles.innerHTML = "";
+  techBubbles.innerHTML = "";
+
+  selectedTech.forEach(t =>
+    addBubble(t, techBubbles, selectedTech)
+  );
+
+  renderPreview();
+});
+
+// submit form
 form.addEventListener("submit", async e => {
   e.preventDefault();
 
   submitBtn.disabled = true;
-  submitBtn.textContent = submitBtn.dataset.editId ? "Updating..." : "Uploading...";
 
   const mediaUrl = await uploadMedia(mediaInput.files[0]);
 
@@ -267,5 +257,6 @@ form.addEventListener("submit", async e => {
   submitBtn.disabled = false;
 });
 
-// initial load
+// init
 loadProjects();
+loadGitHubRepos();
