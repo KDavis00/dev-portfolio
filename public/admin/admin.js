@@ -170,7 +170,11 @@ async function uploadMedia(file) {
 }
 
 // github import button handler
-document.getElementById("importGitHubBtn").addEventListener("click", importGitHubProjects);
+const importBtn = document.getElementById("importGitHubBtn");
+
+if (importBtn) {
+  importBtn.addEventListener("click", importGitHubProjects);
+}
 
 // import github repositories
 async function importGitHubProjects() {
