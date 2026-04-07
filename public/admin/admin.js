@@ -182,26 +182,37 @@ async function importGitHubProjects() {
     const res = await fetch("https://api.github.com/users/KDavis00/repos");
     const repos = await res.json();
 
-    for (const repo of repos) {
-      const project = {
-        title: repo.name,
-        description: repo.description || "No description",
-        category: repo.language || "GitHub",
-        tech: repo.language || "",
-        demo: repo.homepage || "",
-        github: repo.html_url,
-        url: ""
-      };
-
-      await fetch("/api/projects", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(project)
-      });
+    if (!repos.length) {
+      alert("No repos found");
+      return;
     }
 
-    alert("GitHub projects imported!");
-    loadProjects();
+    const repo = repos[0]; // start with first repo (or let user choose later)
+
+    // fill form only
+    titleInput.value = repo.name || "";
+    descriptionInput.value = repo.description || "";
+
+    githubInput.value = repo.html_url || "";
+    demoInput.value = repo.homepage || "";
+
+    // optional auto-fill (but user can change)
+    selectedCategories = repo.language ? [repo.language] : [];
+    categoryBubbles.innerHTML = "";
+    selectedCategories.forEach(cat =>
+      addBubble(cat, categoryBubbles, selectedCategories)
+    );
+
+    selectedTech = repo.language ? [repo.language] : [];
+    techBubbles.innerHTML = "";
+    selectedTech.forEach(tech =>
+      addBubble(tech, techBubbles, selectedTech)
+    );
+
+    renderPreview();
+
+    alert("Form filled from GitHub repo. You can edit before saving.");
+
   } catch (err) {
     console.error(err);
     alert("GitHub import failed");
